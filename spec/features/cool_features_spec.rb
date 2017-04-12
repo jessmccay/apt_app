@@ -1,12 +1,52 @@
 require 'rails_helper'
 
 RSpec.feature "CoolFeatures", type: :feature do
-  context "Visiting the landing page" do
-    Steps "to viewing the apartment list" do
+  context "Becoming a site user" do
+    Steps "To sign up" do
       Given "I am on the landing page" do
         visit "/"
       end
-      "add some scenarios (or delete) #{__FILE__}"
+      And "I can see a Log In form" do
+        expect(page).to have_content "Log in"
+      end
+      And "I can go to the sign up page" do
+        click_on "Sign up"
+        expect(page).to have_content "Password confirmation"
+      end
+      Then "I can fill out the form" do
+        fill_in "Email", with: "this@this.com"
+        fill_in "Password", with: "password"
+        fill_in "Password confirmation", with: "password"
+        click_button "Sign up"
+      end
+      Then "I can see a user created confirmation message" do
+        expect(page).to have_content "Welcome! You have signed up successfully."
+      end
+    end
+    Steps "to logging out" do
+      Given "I am a registered user and logged in" do
+        visit "/"
+        click_on "Sign up"
+        fill_in "Email", with: "this@this.com"
+        fill_in "Password", with: "password"
+        fill_in "Password confirmation", with: "password"
+        click_button "Sign up"
+        expect(page).to have_content "Logout"
+      end
+      Then"I can log out" do
+        click_on "Logout"
+        expect(page).to have_content "Log in"
+      end
+    end # close steps
+    Steps "to viewing the apartment list" do
+      Given "I am a registered user" do
+        visit "/"
+        click_on "Sign up"
+        fill_in "Email", with: "this@this.com"
+        fill_in "Password", with: "password"
+        fill_in "Password confirmation", with: "password"
+        click_button "Sign up"
+      end
       Then "I can see a list of apartments" do
         expect(page).to have_content "Street"
         expect(page).to have_content "City"
@@ -20,8 +60,17 @@ RSpec.feature "CoolFeatures", type: :feature do
   end # close context
   context "creating a new apartment listing" do
     Steps "to create a new apartment listing" do
-      Given "I am on the new apartment page" do
-        visit "/apartments/new"
+      Given "I am a registered user" do
+        visit "/"
+        click_on "Sign up"
+        fill_in "Email", with: "this@this.com"
+        fill_in "Password", with: "password"
+        fill_in "Password confirmation", with: "password"
+        click_button "Sign up"
+      end
+      And "I can go to the new apartment page" do
+        click_on "New Apartment"
+        expect(page).to have_content "Back"
       end
       And "I can fill out the new apartment form" do
         fill_in "Street1", with: "Garnet Ave"
@@ -32,9 +81,10 @@ RSpec.feature "CoolFeatures", type: :feature do
         fill_in "Name", with: "Gretta's apartments"
         fill_in "Phone number", with: "555-5555"
         fill_in "Hours", with: "9am-5pm"
+
         click_on "Create Apartment"
         expect(page).to have_content "Apartment was successfully created."
       end
-    end
+    end # close steps
   end  # close context
-end
+end # close feature

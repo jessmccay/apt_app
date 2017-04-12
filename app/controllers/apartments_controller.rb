@@ -1,6 +1,6 @@
 class ApartmentsController < ApplicationController
   before_action :set_apartment, only: [:show, :edit, :update, :destroy]
-
+  before_action :authenticate_user! #add this line
   # GET /apartments
   # GET /apartments.json
   def index
@@ -69,6 +69,6 @@ class ApartmentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def apartment_params
-      params.require(:apartment).permit(:street1, :street2, :city, :postal_code, :state, :country, :name, :phone_number, :hours)
+      params.require(:apartment).permit(:street1, :street2, :city, :postal_code, :state, :country, :name, :phone_number, :hours, :user_id)
     end
 end
