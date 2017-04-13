@@ -1,4 +1,6 @@
 require 'rails_helper'
+require 'cancancan'
+require 'rolify'
 
 RSpec.feature "CoolFeatures", type: :feature do
   context "Becoming a site user" do
@@ -38,7 +40,7 @@ RSpec.feature "CoolFeatures", type: :feature do
         expect(page).to have_content "Log in"
       end
     end # close steps
-    Steps "to viewing the apartment list" do
+    Steps "to viewing the apartment list as a renter" do
       Given "I am a registered user" do
         visit "/"
         click_on "Sign up"
@@ -56,6 +58,8 @@ RSpec.feature "CoolFeatures", type: :feature do
         expect(page).to have_content "Phone number"
         expect(page).to have_content "Hours"
       end
+      ability.should be_able_to(:destroy, Project.new(:user => user))
+ability.should_not be_able_to(:destroy, Project.new)
     end #close steps
   end # close context
   context "creating a new apartment listing" do
