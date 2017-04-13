@@ -3,6 +3,17 @@ require 'cancancan'
 require 'rolify'
 
 RSpec.feature "CoolFeatures", type: :feature do
+  context "visiting the site" do
+    Steps "to visiting the site as an unauthorized user" do
+      Given "I am on the landing page" do
+        visit "/"
+      end
+      Then "I can see a list of apartments" do
+        expect(page).to have_content "Apartments"
+        expect(page).to have_content "Street1"
+      end
+    end
+  end
   context "Becoming a site user" do
     Steps "To sign up" do
       Given "I am on the landing page" do
@@ -58,8 +69,9 @@ RSpec.feature "CoolFeatures", type: :feature do
         expect(page).to have_content "Phone number"
         expect(page).to have_content "Hours"
       end
-      ability.should be_able_to(:destroy, Project.new(:user => user))
-ability.should_not be_able_to(:destroy, Project.new)
+      And "I cannot edit or delete content" do
+        ability.should_not be_able_to(:destroy, Apartment.new)
+      end
     end #close steps
   end # close context
   context "creating a new apartment listing" do
