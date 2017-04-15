@@ -1,6 +1,5 @@
 require 'rails_helper'
-require 'cancancan'
-require 'rolify'
+load "db/seeds.rb"
 
 RSpec.feature "CoolFeatures", type: :feature do
   context "visiting the site" do
@@ -16,11 +15,13 @@ RSpec.feature "CoolFeatures", type: :feature do
   end
   context "Becoming a site user" do
     Steps "To sign up" do
-      Given "I am on the landing page" do
+      Given "I am on sign up page" do
         visit "/"
+        click_on "Log in"
       end
+
       And "I can see a Log In form" do
-        expect(page).to have_content "Log in"
+        expect(page).to have_content "Email"
       end
       And "I can go to the sign up page" do
         click_on "Sign up"
@@ -39,6 +40,7 @@ RSpec.feature "CoolFeatures", type: :feature do
     Steps "to logging out" do
       Given "I am a registered user and logged in" do
         visit "/"
+        click_on "Log in"
         click_on "Sign up"
         fill_in "Email", with: "this@this.com"
         fill_in "Password", with: "password"
@@ -54,6 +56,7 @@ RSpec.feature "CoolFeatures", type: :feature do
     Steps "to viewing the apartment list as a renter" do
       Given "I am a registered user" do
         visit "/"
+        click_on "Log in"
         click_on "Sign up"
         fill_in "Email", with: "this@this.com"
         fill_in "Password", with: "password"
@@ -70,7 +73,10 @@ RSpec.feature "CoolFeatures", type: :feature do
         expect(page).to have_content "Hours"
       end
       And "I cannot edit or delete content" do
-        ability.should_not be_able_to(:destroy, Apartment.new)
+        jess = User.new(email: "jess@jess.com", password: "password", password_confirmation: "password")
+        ability = Ability.new(role: user, user_id: jess.id)
+        ability.save
+        jess.ability.should_not be_able_to(:destroy, Apartment.new)
       end
     end #close steps
   end # close context
@@ -78,6 +84,7 @@ RSpec.feature "CoolFeatures", type: :feature do
     Steps "to create a new apartment listing" do
       Given "I am a registered user" do
         visit "/"
+        click_on "Log in"
         click_on "Sign up"
         fill_in "Email", with: "this@this.com"
         fill_in "Password", with: "password"

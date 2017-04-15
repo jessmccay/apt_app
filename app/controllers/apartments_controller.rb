@@ -1,5 +1,5 @@
 class ApartmentsController < ApplicationController
-  # before_action :authenticate_user! #add this line
+  before_action :authenticate_user!, :except => [:index, :show] #add this line
   load_and_authorize_resource   # add this line
   before_action :set_apartment, only: [:show, :edit, :update, :destroy]
 
