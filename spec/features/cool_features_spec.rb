@@ -1,15 +1,27 @@
 require 'rails_helper'
-require 'cancancan'
-require 'rolify'
+load "db/seeds.rb"
 
 RSpec.feature "CoolFeatures", type: :feature do
-  context "Becoming a site user" do
-    Steps "To sign up" do
+  context "visiting the site" do
+    Steps "to visiting the site as an unauthorized user" do
       Given "I am on the landing page" do
         visit "/"
       end
+      Then "I can see a list of apartments" do
+        expect(page).to have_content "Apartments"
+        expect(page).to have_content "Street1"
+      end
+    end
+  end
+  context "Becoming a site user" do
+    Steps "To sign up" do
+      Given "I am on sign up page" do
+        visit "/"
+        click_on "Log in"
+      end
+
       And "I can see a Log In form" do
-        expect(page).to have_content "Log in"
+        expect(page).to have_content "Email"
       end
       And "I can go to the sign up page" do
         click_on "Sign up"
@@ -28,6 +40,7 @@ RSpec.feature "CoolFeatures", type: :feature do
     Steps "to logging out" do
       Given "I am a registered user and logged in" do
         visit "/"
+        click_on "Log in"
         click_on "Sign up"
         fill_in "Email", with: "this@this.com"
         fill_in "Password", with: "password"
@@ -43,6 +56,7 @@ RSpec.feature "CoolFeatures", type: :feature do
     Steps "to viewing the apartment list as a renter" do
       Given "I am a registered user" do
         visit "/"
+        click_on "Log in"
         click_on "Sign up"
         fill_in "Email", with: "this@this.com"
         fill_in "Password", with: "password"
@@ -58,14 +72,19 @@ RSpec.feature "CoolFeatures", type: :feature do
         expect(page).to have_content "Phone number"
         expect(page).to have_content "Hours"
       end
-      ability.should be_able_to(:destroy, Project.new(:user => user))
-ability.should_not be_able_to(:destroy, Project.new)
+      And "I cannot edit or delete content" do
+        jess = User.new(email: "jess@jess.com", password: "password", password_confirmation: "password")
+        ability = Ability.new(role: user, user_id: jess.id)
+        ability.save
+        jess.ability.should_not be_able_to(:destroy, Apartment.new)
+      end
     end #close steps
   end # close context
   context "creating a new apartment listing" do
     Steps "to create a new apartment listing" do
       Given "I am a registered user" do
         visit "/"
+        click_on "Log in"
         click_on "Sign up"
         fill_in "Email", with: "this@this.com"
         fill_in "Password", with: "password"
