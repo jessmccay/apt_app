@@ -3,6 +3,7 @@
 #
 # Examples:
 #
-jess = User.new(email: "devs@gmail.com",  password: "password", password_confirmation: "password")
+jess = User.create(email: "devs@gmail.com",  password: "password")
+jess.add_role(:admin)
 
-apt = Apartment.new(street1: "garnet", name: "great place", phone_number: "5555555", user_id: jess.id)
+apt = Apartment.create(street1: "garnet", name: "great place", phone_number: "5555555", user_id: jess.id)
